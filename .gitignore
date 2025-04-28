@@ -61,3 +61,4 @@ local_settings.py
 # Database files
 *.db
 *.sqlite3
+*.mcts
