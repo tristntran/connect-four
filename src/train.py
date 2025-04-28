@@ -40,34 +40,57 @@ class ConnectFourGame(Game):
         # Switch to the next player
         self.current_player_idx = (self.current_player_idx + 1) % 2
     
-    def has_outcome(self):
+    def _check_win(self, return_winner=False):
         # Check for horizontal wins
         for row in range(self.n_rows):
             for col in range(self.n_cols - self.n_win + 1):
                 window = self.board[row, col:col + self.n_win]
-                if abs(window.sum()) == self.n_win:
-                    return True
+                # Check for player 1 win
+                if np.all(window == 1):
+                    return [0] if return_winner else True
+                # Check for player 2 win
+                if np.all(window == 2):
+                    return [1] if return_winner else True
 
         # Check for vertical wins
         for row in range(self.n_rows - self.n_win + 1):
             for col in range(self.n_cols):
                 window = self.board[row:row + self.n_win, col]
-                if abs(window.sum()) == self.n_win:
-                    return True
+                # Check for player 1 win
+                if np.all(window == 1):
+                    return [0] if return_winner else True
+                # Check for player 2 win
+                if np.all(window == 2):
+                    return [1] if return_winner else True
 
         # Check for diagonal wins (positive slope)
         for row in range(self.n_rows - self.n_win + 1):
             for col in range(self.n_cols - self.n_win + 1):
-                window = [self.board[row + i, col + i] for i in range(self.n_win)]
-                if abs(sum(window)) == self.n_win:
-                    return True
+                window = np.array([self.board[row + i, col + i] for i in range(self.n_win)])
+                # Check for player 1 win
+                if np.all(window == 1):
+                    return [0] if return_winner else True
+                # Check for player 2 win
+                if np.all(window == 2):
+                    return [1] if return_winner else True
 
         # Check for diagonal wins (negative slope)
         for row in range(self.n_win - 1, self.n_rows):
             for col in range(self.n_cols - self.n_win + 1):
-                window = [self.board[row - i, col + i] for i in range(self.n_win)]
-                if abs(sum(window)) == self.n_win:
-                    return True
+                window = np.array([self.board[row - i, col + i] for i in range(self.n_win)])
+                # Check for player 1 win
+                if np.all(window == 1):
+                    return [0] if return_winner else True
+                # Check for player 2 win
+                if np.all(window == 2):
+                    return [1] if return_winner else True
+
+        return [] if return_winner else False
+    
+    def has_outcome(self):
+        # Check for win
+        if self._check_win():
+            return True
 
         # Check for draw (board is full)
         if len(self.get_valid_moves()) == 0:
@@ -83,35 +106,8 @@ class ConnectFourGame(Game):
         if len(self.get_valid_moves()) == 0:
             return [0, 1]
             
-        # Check for horizontal wins
-        for row in range(self.n_rows):
-            for col in range(self.n_cols - self.n_win + 1):
-                window = self.board[row, col:col + self.n_win]
-                if abs(window.sum()) == self.n_win:
-                    return [int(window[0] - 1)]
-
-        # Check for vertical wins
-        for row in range(self.n_rows - self.n_win + 1):
-            for col in range(self.n_cols):
-                window = self.board[row:row + self.n_win, col]
-                if abs(window.sum()) == self.n_win:
-                    return [int(window[0] - 1)]
-
-        # Check for diagonal wins (positive slope)
-        for row in range(self.n_rows - self.n_win + 1):
-            for col in range(self.n_cols - self.n_win + 1):
-                window = [self.board[row + i, col + i] for i in range(self.n_win)]
-                if abs(sum(window)) == self.n_win:
-                    return [int(window[0] - 1)]
-
-        # Check for diagonal wins (negative slope)
-        for row in range(self.n_win - 1, self.n_rows):
-            for col in range(self.n_cols - self.n_win + 1):
-                window = [self.board[row - i, col + i] for i in range(self.n_win)]
-                if abs(sum(window)) == self.n_win:
-                    return [int(window[0] - 1)]
-
-        return []
+        # Check for win
+        return self._check_win(return_winner=True)
 
 def train():
     game = ConnectFourGame()

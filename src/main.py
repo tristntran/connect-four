@@ -66,7 +66,6 @@ def main():
             print(f"AI placed in column {move}")
         
         game.take_action(move)
-    
     # Game over
     print("\nFinal board:")
     print_board(game.get_state())
